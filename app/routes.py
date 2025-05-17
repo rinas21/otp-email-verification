@@ -15,7 +15,7 @@ def index():
         email = request.form['email']
         
         # Check cooldown
-        on_cooldown, remaining = is_on_cooldown(Config.OTP_RESEND_COOLDOWN)
+        on_cooldown, remaining = is_on_cooldown(email,Config.OTP_RESEND_COOLDOWN)
         if on_cooldown:
             flash(f"Please wait {remaining} seconds before requesting a new OTP.", "warning")
             return render_template('index.html')
@@ -42,7 +42,8 @@ def verify():
         return redirect(url_for('main.index'))
     
     # Get cooldown info for resend button
-    on_cooldown, cooldown_remaining = is_on_cooldown(Config.OTP_RESEND_COOLDOWN)
+    email = session.get('email', '')
+    on_cooldown, cooldown_remaining = is_on_cooldown(email,Config.OTP_RESEND_COOLDOWN)
     
     if request.method == 'POST':
         # Get OTP from form
@@ -76,7 +77,8 @@ def verify():
 def resend_otp():
     """Resend OTP"""
     # Check cooldown
-    on_cooldown, _ = is_on_cooldown(Config.OTP_RESEND_COOLDOWN)
+    email = session.get('email', '')
+    on_cooldown, _ = is_on_cooldown(email,Config.OTP_RESEND_COOLDOWN)
     if on_cooldown:
         flash("Please wait before requesting a new OTP.", "warning")
         return redirect(url_for('main.verify'))

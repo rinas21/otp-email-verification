@@ -54,7 +54,13 @@
                 if (this.value.length === 1) {
                     if (index < inputs.length - 1) {
                         inputs[index + 1].focus();
-                    }
+                    }else {
+        // Check if all inputs are filled, then submit
+        const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+        if (allFilled) {
+            document.getElementById('otpForm').submit();
+        }
+    }
                 }
             });
             
