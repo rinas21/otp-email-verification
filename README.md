@@ -95,6 +95,13 @@ python run.py
 Visit: [http://localhost:5000](http://localhost:5000)
 
 ---
+## 🖼️ Screenshot
+
+Here is how the OTP verification page looks:
+
+![OTP Verification Page](screenshots/homepage.png)
+![OTP Verification Page](screenshots/page2.png)
+
 
 ## 🧪 Testing Features
 
