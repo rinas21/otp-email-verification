@@ -21,6 +21,8 @@ body {
 }
 
 .card {
+    margin: 0 auto; /* This helps with horizontal centering */
+    position: relative; /* Ensures the card respects positioning */
     border-radius: 16px;
     border: none;
     box-shadow: 0 10px 25px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
