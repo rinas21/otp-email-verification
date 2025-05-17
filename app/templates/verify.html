@@ -1,24 +1,20 @@
 {% extends "base.html" %}
+
 {% block title %}OTP Verification{% endblock %}
+
 {% block card_title %}Enter Verification Code{% endblock %}
+
 {% block content %}
 <p class="masked-email">We've sent a code to {{ masked_email }}</p>
+
 <form method="POST" action="{{ url_for('main.verify') }}" id="otpForm">
     <div class="otp-input-container">
         {% for i in range(6) %}
-        <input 
-            type="text" 
-            name="otp_{{ i }}" 
-            class="otp-input" 
-            maxlength="1" 
-            pattern="[0-9]" 
-            inputmode="numeric" 
-            autocomplete="one-time-code" 
-            required 
-            id="otp_{{ i }}"
-        >
+        <input type="text" name="otp_{{ i }}" class="otp-input" maxlength="1" pattern="[0-9]" 
+               inputmode="numeric" autocomplete="one-time-code" required id="otp_{{ i }}">
         {% endfor %}
     </div>
+    
     <div class="d-grid mb-3">
         <button type="submit" class="btn btn-primary btn-block">
             <i class="fas fa-check-circle me-2"></i>Verify Code
@@ -28,15 +24,11 @@
 
 <form method="POST" action="{{ url_for('main.resend_otp') }}" id="resendForm">
     <div class="d-grid">
-        <button 
-            type="submit" 
-            class="btn btn-secondary btn-block" 
-            id="resendBtn"
-            {% if on_cooldown %}disabled{% endif %}
-        >
+        <button type="submit" class="btn btn-secondary btn-block" id="resendBtn" 
+                {% if on_cooldown %}disabled{% endif %}>
             <i class="fas fa-sync-alt me-2"></i>Resend Code
             {% if on_cooldown %}
-                <span id="countdown">({{ cooldown_remaining }}s)</span>
+            <span id="countdown">({{ cooldown_remaining }}s)</span>
             {% endif %}
         </button>
     </div>
@@ -51,48 +43,48 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
     // Auto-focus the first input box
-    document.getElementById('otp_0').focus();
-    
-    // Auto-tab between input fields
-    const inputs = document.querySelectorAll('.otp-input');
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', function() {
-            if (this.value.length === 1) {
-                if (index < inputs.length - 1) {
-                    inputs[index + 1].focus();
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('otp_0').focus();
+        
+        // Auto-tab between input fields
+        const inputs = document.querySelectorAll('.otp-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
                 }
-            }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                // If backspace is pressed and current field is empty, focus previous field
+                if (e.key === 'Backspace' && this.value === '') {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
         });
         
-        input.addEventListener('keydown', function(e) {
-            // If backspace is pressed and current field is empty, focus previous field
-            if (e.key === 'Backspace' && this.value === '') {
-                if (index > 0) {
-                    inputs[index - 1].focus();
-                }
-            }
-        });
-    });
+        // Handle countdown for resend button
+        {% if on_cooldown %}
+        let countdown = {{ cooldown_remaining }};
+        const countdownElement = document.getElementById('countdown');
+        const resendBtn = document.getElementById('resendBtn');
 
-    // Handle countdown for resend button
-    {% if on_cooldown %}
-    let countdown = {{ cooldown_remaining }};
-    const countdownElement = document.getElementById('countdown');
-    const resendBtn = document.getElementById('resendBtn');
-    
-    const timer = setInterval(function() {
-        countdown--;
-        countdownElement.textContent = `(${countdown}s)`;
-        
-        if (countdown <= 0) {
-            clearInterval(timer);
-            resendBtn.disabled = false;
-            countdownElement.textContent = '';
-        }
-    }, 1000);
-    {% endif %}
-});
+        const timer = setInterval(function() {
+            countdown--;
+            countdownElement.textContent = `(${countdown}s)`;
+
+            if (countdown <= 0) {
+                clearInterval(timer);
+                resendBtn.disabled = false;
+                countdownElement.textContent = '';
+            }
+        }, 1000);
+        {% endif %}
+    });
 </script>
 {% endblock %}
